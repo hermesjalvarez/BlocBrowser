@@ -27,6 +27,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
     self.edgesForExtendedLayout = UIRectEdgeNone;
     
     self.activityIndicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
@@ -35,6 +36,7 @@
 }
 
 - (void)loadView {
+    
     UIView *mainView = [UIView new];
     
     self.webView = [[WKWebView alloc] init];
@@ -87,6 +89,7 @@
 }
 
 - (void) viewWillLayoutSubviews {
+    
     [super viewWillLayoutSubviews];
     
     // First, calculate some dimensions.
@@ -111,6 +114,7 @@
 #pragma mark - UITextFieldDelegate
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
+    
     [textField resignFirstResponder];
     
     NSString *URLString = textField.text;
@@ -149,8 +153,8 @@
     [self webView:webView didFailNavigation:navigation withError:error];
 }
 
-- (void)webView:(WKWebView *)webView didFailNavigation:(WKNavigation *)navigation withError:(NSError *)error
-{
+- (void)webView:(WKWebView *)webView didFailNavigation:(WKNavigation *)navigation withError:(NSError *)error {
+    
     if (error.code != NSURLErrorCancelled) {
         UIAlertController *alert = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Error", @"Error")
                                                                        message:[error localizedDescription]
@@ -170,7 +174,9 @@
 #pragma mark - Miscellaneous
 
 - (void) updateButtonsAndTitle {
+    
     NSString *webpageTitle = [self.webView.title copy];
+    
     if ([webpageTitle length]) {
         self.title = webpageTitle;
     } else {
