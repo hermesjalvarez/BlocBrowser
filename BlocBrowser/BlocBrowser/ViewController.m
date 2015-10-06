@@ -117,6 +117,11 @@
     
     NSURL *URL = [NSURL URLWithString:URLString];
     
+    if ([URLString rangeOfString:[NSString stringWithFormat:@" "]].location != NSNotFound)
+    {
+        URL = [NSURL URLWithString:[NSString stringWithFormat:@"http://www.google.com/search?q=%@", [URLString stringByReplacingOccurrencesOfString:@" " withString:@"+"]]];
+    }
+    
     if (!URL.scheme) {
         // The user didn't type http: or https:
         URL = [NSURL URLWithString:[NSString stringWithFormat:@"http://%@", URLString]];
