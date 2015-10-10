@@ -17,6 +17,9 @@
 @property (nonatomic, strong) UITapGestureRecognizer *tapGesture;
 @property (nonatomic, strong) UIPanGestureRecognizer *panGesture;
 
+@property (nonatomic, strong) UIPinchGestureRecognizer *pinchGesture;
+@property (nonatomic) CGRect startingPinchFrame;
+
 @end
 
 @implementation AwesomeFloatingToolbar
@@ -68,7 +71,9 @@
         
         self.panGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(panFired:)];
         [self addGestureRecognizer:self.panGesture];
-        
+
+		self.pinchGesture = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(pinchFired:)];
+		[self addGestureRecognizer:self.pinchGesture];
     }
     
     return self;
@@ -100,6 +105,53 @@
         [recognizer setTranslation:CGPointZero inView:self];
     }
 }
+
+
+- (void)pinchFired:(UIPinchGestureRecognizer *)recognizer {
+
+	switch (recognizer.state) {
+		case UIGestureRecognizerStateBegan: {
+			self.startingPinchFrame = self.frame;
+			NSLog(@"starting frame %@", NSStringFromCGRect(self.startingPinchFrame));
+			break;
+		}
+		case UIGestureRecognizerStateChanged: {
+			//	scale < 1.0 == pinch fingers inside
+			//	scale > 1.0 == spread fingers apart
+			CGFloat scale = recognizer.scale;
+
+			//	horizontal delta
+			CGFloat dx = self.startingPinchFrame.size.width * (scale - 1);
+			//	vertical delta
+			CGFloat dy = self.startingPinchFrame.size.height * (scale - 1);
+
+			//	calculate new frame, while keeping the same center
+			//	positive value of dx,dy shirnks the frame
+			//	negative value expands the frame
+			CGRect newFrame = CGRectInset(self.startingPinchFrame, -dx, -dy);
+			NSLog(@"new frame = %@", NSStringFromCGRect(newFrame));
+
+			[self.delegate floatingToolbar:self didPinchToFrame:newFrame];
+
+			break;
+		}
+		case UIGestureRecognizerStateEnded: {
+			//	nothing
+			break;
+		}
+		case UIGestureRecognizerStateCancelled:
+		case UIGestureRecognizerStateFailed: {
+			//	revert to original frame
+			[self.delegate floatingToolbar:self didPinchToFrame:self.startingPinchFrame];
+			break;
+		}
+		default: {
+			break;
+		}
+	}
+
+}
+
 
 - (void) layoutSubviews {
     // set the frames for the 4 labels
