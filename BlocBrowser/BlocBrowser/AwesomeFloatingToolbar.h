@@ -17,6 +17,10 @@
 - (void) floatingToolbar:(AwesomeFloatingToolbar *)toolbar didSelectButtonWithTitle:(NSString *)title;
 - (void) floatingToolbar:(AwesomeFloatingToolbar *)toolbar didTryToPanWithOffset:(CGPoint)offset;
 
+//	this will return YES if frame is applied.
+//	NO if delegate deems that new frame would be invalid
+- (BOOL) floatingToolbar:(AwesomeFloatingToolbar *)toolbar didPinchToFrame:(CGRect)newFrame;
+
 //- (void) floatingToolbar:(AwesomeFloatingToolbar *)toolbar didSelectButtonWithTitle:(NSString *)title;
 
 @end

@@ -28,6 +28,8 @@
 @property (nonatomic, strong) AwesomeFloatingToolbar *awesomeToolbar;
 @property (nonatomic, assign) NSUInteger frameCount;
 
+@property (nonatomic) BOOL firstPassOver;
+
 @end
 
 @implementation ViewController
@@ -36,6 +38,8 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+
+	self.firstPassOver = NO;
     
     self.edgesForExtendedLayout = UIRectEdgeNone;
     
@@ -53,6 +57,12 @@
     [alert addAction:defaultAction];
     
     [self presentViewController:alert animated:YES completion:nil];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+	[super viewDidAppear:animated];
+
+	self.firstPassOver = YES;
 }
 
 - (void)loadView {
@@ -130,10 +140,14 @@
 //        currentButtonX += buttonWidth;
 //    }
     //self.awesomeToolbar.frame = CGRectMake(20, 100, 280, 60);
-    
-    CGFloat toolBarHeight = 70;
-    self.awesomeToolbar.frame = CGRectMake(0, CGRectGetHeight(self.view.bounds)-toolBarHeight, CGRectGetWidth(self.view.bounds), toolBarHeight);
-    
+
+	//	this method gets called everytime you try to change the frame in
+	//	floatingToolbar:didPinchToFrame:
+	//	so need to limit the setup only to first time view lifecycle (didLoad / willAppear / didAppear) is performed
+	if (!self.firstPassOver) {
+		CGFloat toolBarHeight = 70;
+		self.awesomeToolbar.frame = CGRectMake(0, CGRectGetHeight(self.view.bounds)-toolBarHeight, CGRectGetWidth(self.view.bounds), toolBarHeight);
+	}
 }
 
 #pragma mark - UITextFieldDelegate
@@ -286,6 +300,17 @@
     if (CGRectContainsRect(self.view.bounds, potentialNewFrame)) {
         toolbar.frame = potentialNewFrame;
     }
+}
+
+- (BOOL)floatingToolbar:(AwesomeFloatingToolbar *)toolbar didPinchToFrame:(CGRect)newFrame {
+
+	BOOL frameAcceptable = CGRectContainsRect(self.view.bounds, newFrame);
+
+	if (frameAcceptable) {
+		self.awesomeToolbar.frame = newFrame;
+	}
+
+	return frameAcceptable;
 }
 
 @end
